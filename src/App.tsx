@@ -10,6 +10,7 @@ import {
   TILE_CATALOG,
 } from './data/officeData';
 import type {
+  AIProvider,
   AgentMessage,
   AgentRuntimeState,
   CameraPreset,
@@ -44,6 +45,7 @@ export default function App() {
   const [audioEnabled, setAudioEnabled] = useState(false);
 
   const [targetAgentId, setTargetAgentId] = useState<string>('raka');
+  const [aiProvider, setAiProvider] = useState<AIProvider>('auto');
   const [isDispatching, setIsDispatching] = useState(false);
   const [messages, setMessages] = useState<AgentMessage[]>([]);
   const [pendingDirective, setPendingDirective] = useState<AgentDirective | null>(null);
@@ -258,6 +260,7 @@ export default function App() {
             agentRole: primaryAgent.role,
             agentSpecialty: primaryAgent.specialty,
             isTeamCollaboration: isTeam,
+            provider: aiProvider,
             history: recentHistory,
           }),
         });
@@ -278,6 +281,7 @@ export default function App() {
           deliverables: Array.isArray(data.deliverables) ? data.deliverables : [],
           metadataBlock: typeof data.metadataBlock === 'string' ? data.metadataBlock : undefined,
           collaboratorName: collaborator?.name,
+          providerUsed: typeof data.providerUsed === 'string' ? data.providerUsed : undefined,
           timestamp: formatClockTime(),
         };
         setMessages((prev) => [...prev, replyMsg]);
@@ -343,11 +347,11 @@ export default function App() {
         setIsDispatching(false);
       }
     },
-    [messages],
+    [messages, aiProvider],
   );
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#EBF0F5]">
+    <div className="relative w-screen h-screen overflow-hidden bg-[#09090B]">
       <TopBar
         workspaceMode={workspaceMode}
         drawerOpen={drawerOpen}
@@ -378,7 +382,7 @@ export default function App() {
 
       {/* Brief non-intrusive tile feedback toast */}
       {tileNotice && (
-        <div className="fixed top-18 left-1/2 -translate-x-1/2 z-20 pointer-events-none px-3.5 py-1.5 bg-slate-900 text-white text-xs font-medium rounded-lg shadow-md">
+        <div className="fixed top-18 left-1/2 -translate-x-1/2 z-20 pointer-events-none px-3.5 py-1.5 bg-[#111114] border border-zinc-800 text-zinc-100 text-xs font-medium rounded-lg shadow-xl">
           {tileNotice}
         </div>
       )}
@@ -421,6 +425,8 @@ export default function App() {
         onToggleAudio={handleToggleAudio}
         targetAgentId={targetAgentId}
         onChangeTargetAgent={setTargetAgentId}
+        aiProvider={aiProvider}
+        onChangeAiProvider={setAiProvider}
         isDispatching={isDispatching}
         onDispatchPrompt={handleDispatchPrompt}
       />

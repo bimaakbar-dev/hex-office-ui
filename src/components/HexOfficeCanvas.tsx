@@ -220,11 +220,11 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
     renderer.domElement.addEventListener('webglcontextlost', handleContextLost);
     renderer.domElement.addEventListener('webglcontextrestored', handleContextRestored);
 
-    // Scene & Studio Environment
+    // Scene & Vercel Obsidian Studio Environment
     const scene = new THREE.Scene();
-    const bgHex = 0xebf0f5;
+    const bgHex = 0x09090b;
     scene.background = new THREE.Color(bgHex);
-    scene.fog = new THREE.FogExp2(bgHex, 0.0145);
+    scene.fog = new THREE.FogExp2(bgHex, 0.0175);
 
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -240,18 +240,18 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = !isSoftwareGl;
-    controls.dampingFactor = 0.06;
+    controls.dampingFactor = 0.045;
     controls.minDistance = 6.5;
     controls.maxDistance = 30;
     controls.maxPolarAngle = Math.PI / 2 - 0.12;
     controls.minPolarAngle = 0.18;
     controls.target.set(0, 0.4, 0);
 
-    // 3-Point Warm/Cool Studio Lighting
-    const hemiLight = new THREE.HemisphereLight(0xdce8f7, 0xb8a996, 0.72);
+    // 3-Point Architectural Dark Studio Lighting
+    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x18181b, 0.92);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xfff4e0, 1.55);
+    const keyLight = new THREE.DirectionalLight(0xfff1dc, 1.85);
     keyLight.position.set(12, 18, 10);
     keyLight.castShadow = !isSoftwareGl;
     keyLight.shadow.mapSize.width = 2048;
@@ -267,16 +267,16 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
     keyLight.shadow.normalBias = 0.02;
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xcbe2ff, 0.52);
-    rimLight.position.set(-14, 9, -12);
+    const rimLight = new THREE.DirectionalLight(0x93c5fd, 0.95);
+    rimLight.position.set(-14, 10, -12);
     scene.add(rimLight);
 
-    // Architectural studio ground deck under the hex island (so nothing floats in void)
+    // Dark obsidian architectural deck under the hex island
     const deckGeo = new THREE.CylinderGeometry(16.5, 17.5, 0.6, 6);
     const deckMat = new THREE.MeshStandardMaterial({
-      color: 0xdce3ec,
-      roughness: 0.88,
-      metalness: 0.04,
+      color: 0x111115,
+      roughness: 0.72,
+      metalness: 0.22,
     });
     const deckMesh = new THREE.Mesh(deckGeo, deckMat);
     deckMesh.position.y = -0.56;
@@ -285,7 +285,7 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
 
     const outerFloor = new THREE.Mesh(
       new THREE.CircleGeometry(65, 48),
-      new THREE.MeshStandardMaterial({ color: 0xe3e9f0, roughness: 0.95 }),
+      new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.92, metalness: 0.05 }),
     );
     outerFloor.rotation.x = -Math.PI / 2;
     outerFloor.position.y = -0.86;
@@ -294,20 +294,21 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
 
     const textures = createProceduralTextures(renderer.capabilities.getMaxAnisotropy());
 
-    // Hover cursor hex ring
-    const hoverRingGeo = new THREE.RingGeometry(HEX_RADIUS - 0.13, HEX_RADIUS - 0.02, 6);
+    // Hover cursor hex ring (glides smoothly between hovered tiles)
+    const hoverRingGeo = new THREE.RingGeometry(HEX_RADIUS - 0.12, HEX_RADIUS - 0.02, 6);
     hoverRingGeo.rotateX(-Math.PI / 2);
     hoverRingGeo.rotateY(Math.PI / 6);
     const hoverRingMat = new THREE.MeshBasicMaterial({
-      color: 0x2563eb,
+      color: 0xf4f4f5,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.78,
+      opacity: 0.85,
     });
     const hoverRing = new THREE.Mesh(hoverRingGeo, hoverRingMat);
     hoverRing.position.y = 0.055;
     hoverRing.visible = false;
     scene.add(hoverRing);
+    const hoverTarget = { x: 0, z: 0 };
 
     const tileGroup = new THREE.Group();
     scene.add(tileGroup);
@@ -538,9 +539,13 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
           hoverRing.visible = false;
         } else if (hit.userData.tileId) {
           const world = hexToWorld(hit.userData.q, hit.userData.r);
-          hoverRing.position.set(world.x, 0.055, world.z);
+          hoverTarget.x = world.x;
+          hoverTarget.z = world.z;
+          if (!hoverRing.visible) {
+            hoverRing.position.set(world.x, 0.055, world.z);
+          }
           hoverRingMat.color.setHex(
-            workspaceModeRef.current === 'layout' ? 0xd96b43 : 0x2563eb,
+            workspaceModeRef.current === 'layout' ? 0xf97316 : 0xf4f4f5,
           );
           hoverRing.visible = true;
           renderer.domElement.style.cursor =
@@ -640,14 +645,20 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
       const elapsed = clock.elapsedTime;
       const simDelta = rawDelta * simSpeedRef.current;
 
+      // Smooth hover ring glide across hex tiles
+      if (hoverRing.visible) {
+        hoverRing.position.x = THREE.MathUtils.damp(hoverRing.position.x, hoverTarget.x, 18, rawDelta);
+        hoverRing.position.z = THREE.MathUtils.damp(hoverRing.position.z, hoverTarget.z, 18, rawDelta);
+      }
+
       // Smooth damped camera preset motion
       if (camTransitionActive) {
-        camera.position.x = THREE.MathUtils.damp(camera.position.x, _targetCamPos.x, 5.5, rawDelta);
-        camera.position.y = THREE.MathUtils.damp(camera.position.y, _targetCamPos.y, 5.5, rawDelta);
-        camera.position.z = THREE.MathUtils.damp(camera.position.z, _targetCamPos.z, 5.5, rawDelta);
-        controls.target.x = THREE.MathUtils.damp(controls.target.x, _targetCtrl.x, 5.5, rawDelta);
-        controls.target.y = THREE.MathUtils.damp(controls.target.y, _targetCtrl.y, 5.5, rawDelta);
-        controls.target.z = THREE.MathUtils.damp(controls.target.z, _targetCtrl.z, 5.5, rawDelta);
+        camera.position.x = THREE.MathUtils.damp(camera.position.x, _targetCamPos.x, 6.2, rawDelta);
+        camera.position.y = THREE.MathUtils.damp(camera.position.y, _targetCamPos.y, 6.2, rawDelta);
+        camera.position.z = THREE.MathUtils.damp(camera.position.z, _targetCamPos.z, 6.2, rawDelta);
+        controls.target.x = THREE.MathUtils.damp(controls.target.x, _targetCtrl.x, 6.2, rawDelta);
+        controls.target.y = THREE.MathUtils.damp(controls.target.y, _targetCtrl.y, 6.2, rawDelta);
+        controls.target.z = THREE.MathUtils.damp(controls.target.z, _targetCtrl.z, 6.2, rawDelta);
         if (camera.position.distanceTo(_targetCamPos) < 0.04) {
           camTransitionActive = false;
         }
@@ -751,42 +762,72 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
           }
         }
 
-        // Apply world transform & procedural character animation
+        // Apply smooth world transform & damped procedural character animation
         ag.rig.root.position.set(ag.worldX, 0, ag.worldZ);
-        ag.rig.bodyGroup.rotation.y = ag.facing;
+        let rotDiff = ag.facing - ag.rig.bodyGroup.rotation.y;
+        while (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
+        while (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
+        ag.rig.bodyGroup.rotation.y += rotDiff * Math.min(1, rawDelta * 12);
 
         if (ag.activity === 'walking' && simSpeedRef.current > 0) {
           const phase = elapsed * 9.5 * Math.max(0.6, simSpeedRef.current * 0.8);
-          ag.rig.leftLeg.rotation.x = Math.sin(phase) * 0.55;
-          ag.rig.rightLeg.rotation.x = -Math.sin(phase) * 0.55;
-          ag.rig.leftArm.rotation.x = -Math.sin(phase) * 0.45;
-          ag.rig.rightArm.rotation.x = Math.sin(phase) * 0.45;
-          ag.rig.bodyGroup.position.y = 0.036 + Math.abs(Math.sin(phase)) * 0.035;
+          ag.rig.leftLeg.rotation.x = THREE.MathUtils.damp(ag.rig.leftLeg.rotation.x, Math.sin(phase) * 0.55, 14, rawDelta);
+          ag.rig.rightLeg.rotation.x = THREE.MathUtils.damp(ag.rig.rightLeg.rotation.x, -Math.sin(phase) * 0.55, 14, rawDelta);
+          ag.rig.leftArm.rotation.x = THREE.MathUtils.damp(ag.rig.leftArm.rotation.x, -Math.sin(phase) * 0.45, 14, rawDelta);
+          ag.rig.rightArm.rotation.x = THREE.MathUtils.damp(ag.rig.rightArm.rotation.x, Math.sin(phase) * 0.45, 14, rawDelta);
+          ag.rig.bodyGroup.position.y = THREE.MathUtils.damp(
+            ag.rig.bodyGroup.position.y,
+            0.036 + Math.abs(Math.sin(phase)) * 0.035,
+            14,
+            rawDelta,
+          );
           ag.rig.statusHalo.visible = false;
         } else if (ag.activity === 'working' || ag.activity === 'thinking') {
           const typeSpeed = ag.activity === 'thinking' ? 13 : 7;
-          ag.rig.leftLeg.rotation.x = THREE.MathUtils.damp(ag.rig.leftLeg.rotation.x, 0, 8, rawDelta);
-          ag.rig.rightLeg.rotation.x = THREE.MathUtils.damp(ag.rig.rightLeg.rotation.x, 0, 8, rawDelta);
-          ag.rig.leftArm.rotation.x = -0.85 + Math.sin(elapsed * typeSpeed) * 0.14;
-          ag.rig.rightArm.rotation.x = -0.85 + Math.cos(elapsed * typeSpeed) * 0.14;
-          ag.rig.bodyGroup.position.y = 0.036;
-          ag.rig.headGroup.rotation.y = Math.sin(elapsed * 1.4 + ag.worldX) * 0.12;
+          ag.rig.leftLeg.rotation.x = THREE.MathUtils.damp(ag.rig.leftLeg.rotation.x, 0, 10, rawDelta);
+          ag.rig.rightLeg.rotation.x = THREE.MathUtils.damp(ag.rig.rightLeg.rotation.x, 0, 10, rawDelta);
+          ag.rig.leftArm.rotation.x = THREE.MathUtils.damp(
+            ag.rig.leftArm.rotation.x,
+            -0.85 + Math.sin(elapsed * typeSpeed) * 0.14,
+            12,
+            rawDelta,
+          );
+          ag.rig.rightArm.rotation.x = THREE.MathUtils.damp(
+            ag.rig.rightArm.rotation.x,
+            -0.85 + Math.cos(elapsed * typeSpeed) * 0.14,
+            12,
+            rawDelta,
+          );
+          ag.rig.bodyGroup.position.y = THREE.MathUtils.damp(ag.rig.bodyGroup.position.y, 0.036, 10, rawDelta);
+          ag.rig.headGroup.rotation.y = THREE.MathUtils.damp(
+            ag.rig.headGroup.rotation.y,
+            Math.sin(elapsed * 1.4 + ag.worldX) * 0.12,
+            8,
+            rawDelta,
+          );
           ag.rig.statusHalo.visible = ag.activity === 'thinking';
           if (ag.activity === 'thinking') {
             ag.rig.statusHalo.rotation.y = elapsed * 2.4;
             ag.rig.statusHalo.position.y = 1.38 + Math.sin(elapsed * 3.5) * 0.05;
           }
         } else {
-          // Coffee / meeting / idle gentle breathing
-          ag.rig.leftLeg.rotation.x = THREE.MathUtils.damp(ag.rig.leftLeg.rotation.x, 0, 8, rawDelta);
-          ag.rig.rightLeg.rotation.x = THREE.MathUtils.damp(ag.rig.rightLeg.rotation.x, 0, 8, rawDelta);
-          ag.rig.leftArm.rotation.x = THREE.MathUtils.damp(ag.rig.leftArm.rotation.x, 0, 8, rawDelta);
-          ag.rig.rightArm.rotation.x =
-            ag.activity === 'coffee'
-              ? -0.65 + Math.sin(elapsed * 2.4) * 0.12
-              : THREE.MathUtils.damp(ag.rig.rightArm.rotation.x, 0, 8, rawDelta);
-          ag.rig.bodyGroup.position.y = 0.036 + Math.sin(elapsed * 2 + ag.worldZ) * 0.012;
-          ag.rig.headGroup.rotation.y = Math.sin(elapsed * 0.9) * 0.16;
+          ag.rig.leftLeg.rotation.x = THREE.MathUtils.damp(ag.rig.leftLeg.rotation.x, 0, 10, rawDelta);
+          ag.rig.rightLeg.rotation.x = THREE.MathUtils.damp(ag.rig.rightLeg.rotation.x, 0, 10, rawDelta);
+          ag.rig.leftArm.rotation.x = THREE.MathUtils.damp(ag.rig.leftArm.rotation.x, 0, 10, rawDelta);
+          const targetRightArm = ag.activity === 'coffee' ? -0.65 + Math.sin(elapsed * 2.4) * 0.12 : 0;
+          ag.rig.rightArm.rotation.x = THREE.MathUtils.damp(ag.rig.rightArm.rotation.x, targetRightArm, 10, rawDelta);
+          ag.rig.bodyGroup.position.y = THREE.MathUtils.damp(
+            ag.rig.bodyGroup.position.y,
+            0.036 + Math.sin(elapsed * 2 + ag.worldZ) * 0.012,
+            10,
+            rawDelta,
+          );
+          ag.rig.headGroup.rotation.y = THREE.MathUtils.damp(
+            ag.rig.headGroup.rotation.y,
+            Math.sin(elapsed * 0.9) * 0.16,
+            8,
+            rawDelta,
+          );
           ag.rig.statusHalo.visible = false;
         }
 
@@ -884,10 +925,10 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
 
   if (webglError) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-[#EBF0F5] p-6">
-        <div className="max-w-md bg-white border border-slate-200 rounded-xl p-6 text-center shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Tampilan 3D Tidak Tersedia</h2>
-          <p className="mt-2 text-sm text-slate-600">{webglError}</p>
+      <div className="w-full h-full flex items-center justify-center bg-[#09090B] p-6">
+        <div className="max-w-md bg-[#111114] border border-zinc-800 rounded-xl p-6 text-center shadow-xl">
+          <h2 className="text-lg font-semibold text-zinc-100">Tampilan 3D Tidak Tersedia</h2>
+          <p className="mt-2 text-sm text-zinc-400">{webglError}</p>
         </div>
       </div>
     );
@@ -898,7 +939,7 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
       {/* Isolated WebGL mount node */}
       <div ref={mountRef} className="w-full h-full" />
 
-      {/* Projected 2D DOM agent badges & thought bubbles (zero canvas text baking) */}
+      {/* Projected 2D DOM agent badges & thought bubbles (Vercel dark obsidian) */}
       <div
         ref={bubbleContainerRef}
         className="pointer-events-none absolute inset-0 overflow-hidden z-10"
@@ -914,22 +955,22 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
               }}
               style={{
                 opacity: 0,
-                transition: 'opacity 150ms ease',
+                transition: 'opacity 180ms cubic-bezier(0.16, 1, 0.3, 1)',
               }}
               className="absolute top-0 left-0 will-change-transform"
             >
               <button
                 type="button"
                 onClick={() => onSelectAgent(profile.id)}
-                className={`pointer-events-auto group flex flex-col items-center text-left transition-transform duration-150 ${
+                className={`pointer-events-auto group flex flex-col items-center text-left transition-transform duration-200 smooth-ease cursor-pointer ${
                   isSelected ? 'scale-105' : 'hover:scale-105'
                 }`}
               >
                 <div
-                  className={`px-2.5 py-1.5 rounded-lg border shadow-sm max-w-[190px] ${
+                  className={`px-2.5 py-1.5 rounded-lg border shadow-md max-w-[195px] transition-colors duration-150 ${
                     isSelected
-                      ? 'bg-slate-900 text-white border-slate-800'
-                      : 'bg-white/95 text-slate-800 border-slate-200/90'
+                      ? 'bg-zinc-50 text-zinc-950 border-white'
+                      : 'bg-[#111114]/95 text-zinc-100 border-zinc-800 hover:border-zinc-700'
                   }`}
                 >
                   <div className="flex items-center gap-1.5 text-[11px] font-semibold leading-tight">
@@ -940,7 +981,7 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
                     <span className="truncate">{profile.name}</span>
                     <span
                       className={`font-normal ${
-                        isSelected ? 'text-slate-300' : 'text-slate-400'
+                        isSelected ? 'text-zinc-600' : 'text-zinc-400'
                       }`}
                     >
                       · {ACTIVITY_LABELS[runtime?.activity ?? 'working']}
@@ -948,7 +989,7 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
                   </div>
                   <p
                     className={`mt-0.5 text-[11px] leading-snug line-clamp-1 ${
-                      isSelected ? 'text-slate-200' : 'text-slate-600'
+                      isSelected ? 'text-zinc-700' : 'text-zinc-400'
                     }`}
                   >
                     {runtime?.thoughtBubble ?? 'Siap bekerja'}
@@ -957,8 +998,8 @@ export const HexOfficeCanvas: React.FC<HexOfficeCanvasProps> = ({
                 <div
                   className={`w-2 h-2 rotate-45 -mt-1 border-r border-b ${
                     isSelected
-                      ? 'bg-slate-900 border-slate-800'
-                      : 'bg-white/95 border-slate-200/90'
+                      ? 'bg-zinc-50 border-white'
+                      : 'bg-[#111114]/95 border-zinc-800'
                   }`}
                 />
               </button>

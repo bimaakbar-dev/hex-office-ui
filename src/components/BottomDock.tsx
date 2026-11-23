@@ -12,7 +12,7 @@ import {
   VolumeX,
 } from 'lucide-react';
 import { AGENT_PROFILES, TILE_CATALOG } from '../data/officeData';
-import type { CameraPreset, TileType, WorkspaceMode } from '../types/office';
+import type { AIProvider, CameraPreset, TileType, WorkspaceMode } from '../types/office';
 
 interface BottomDockProps {
   collapsed: boolean;
@@ -32,6 +32,8 @@ interface BottomDockProps {
   onToggleAudio: () => void;
   targetAgentId: string;
   onChangeTargetAgent: (id: string) => void;
+  aiProvider: AIProvider;
+  onChangeAiProvider: (provider: AIProvider) => void;
   isDispatching: boolean;
   onDispatchPrompt: (prompt: string, agentId: string) => void;
 }
@@ -54,6 +56,8 @@ export const BottomDock: React.FC<BottomDockProps> = ({
   onToggleAudio,
   targetAgentId,
   onChangeTargetAgent,
+  aiProvider,
+  onChangeAiProvider,
   isDispatching,
   onDispatchPrompt,
 }) => {
@@ -69,12 +73,12 @@ export const BottomDock: React.FC<BottomDockProps> = ({
 
   return (
     <div
-      className="fixed bottom-4 left-1/2 z-20 flex flex-col items-center transition-transform duration-200 ease-out"
+      className="fixed bottom-4 left-1/2 z-20 flex flex-col items-center transition-transform duration-200 smooth-ease"
       style={{
         transform: collapsed
           ? 'translate(-50%, calc(100% - 34px))'
           : 'translate(-50%, 0)',
-        maxWidth: 'min(940px, 95vw)',
+        maxWidth: 'min(960px, 95vw)',
         width: 'max-content',
       }}
     >
@@ -82,7 +86,7 @@ export const BottomDock: React.FC<BottomDockProps> = ({
       <button
         type="button"
         onClick={onToggleCollapse}
-        className="mb-1.5 px-3 py-1 bg-white/95 border border-slate-200 rounded-md shadow-xs text-[11px] font-medium text-slate-600 hover:text-slate-900 flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+        className="mb-1.5 px-3 py-1 bg-[#111114]/95 border border-zinc-800 rounded-md shadow-md text-[11px] font-medium text-zinc-400 hover:text-zinc-100 flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer"
         title="Pintasan keyboard: H"
       >
         {collapsed ? (
@@ -98,15 +102,15 @@ export const BottomDock: React.FC<BottomDockProps> = ({
         )}
       </button>
 
-      {/* Main Dock Container (solid rgba surface — zero backdrop-filter over WebGL) */}
-      <div className="bg-white/95 border border-slate-200 rounded-xl shadow-lg px-3.5 py-3 flex flex-col gap-2.5 w-full max-w-[920px]">
+      {/* Main Dock Container (Vercel obsidian surface — zero backdrop-filter over WebGL) */}
+      <div className="bg-[#09090B]/95 border border-zinc-800 rounded-xl shadow-2xl px-3.5 py-3 flex flex-col gap-2.5 w-full max-w-[940px]">
         {workspaceMode === 'observe' ? (
           <form onSubmit={handleSubmit} className="flex flex-wrap sm:flex-nowrap items-center gap-2">
             <select
               value={targetAgentId}
               onChange={(e) => onChangeTargetAgent(e.target.value)}
-              aria-label="Pilih AI Agent"
-              className="h-9 px-2.5 text-xs font-medium text-slate-800 bg-slate-100 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/20 shrink-0 cursor-pointer"
+              aria-label="Pilih Karyawan AI"
+              className="h-9 px-2.5 text-xs font-medium text-zinc-100 bg-[#111114] border border-zinc-800 rounded-lg focus:outline-none focus:border-zinc-600 shrink-0 cursor-pointer"
             >
               <option value="team">Semua Tim (Kolaborasi)</option>
               {AGENT_PROFILES.map((a) => (
@@ -121,13 +125,13 @@ export const BottomDock: React.FC<BottomDockProps> = ({
               value={promptInput}
               onChange={(e) => setPromptInput(e.target.value)}
               placeholder="Beri tugas produksi (misal: 49 keyword Adobe Stock, skrip FB Reels, ide YouTube)..."
-              className="h-9 flex-1 min-w-[200px] px-3 text-xs text-slate-900 placeholder:text-slate-400 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+              className="h-9 flex-1 min-w-[200px] px-3 text-xs text-zinc-100 placeholder:text-zinc-500 bg-[#111114] border border-zinc-800 rounded-lg focus:outline-none focus:border-zinc-600"
             />
 
             <button
               type="submit"
               disabled={!promptInput.trim() || isDispatching}
-              className="h-9 px-3.5 bg-slate-900 text-white text-xs font-semibold rounded-lg hover:bg-slate-800 disabled:opacity-45 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+              className="h-9 px-3.5 bg-zinc-50 text-zinc-950 text-xs font-semibold rounded-lg hover:bg-white disabled:opacity-45 disabled:cursor-not-allowed transition-colors duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
             >
               <Send className="w-3.5 h-3.5" />
               <span>{isDispatching ? 'Memproses...' : 'Kirim'}</span>
@@ -135,7 +139,7 @@ export const BottomDock: React.FC<BottomDockProps> = ({
           </form>
         ) : (
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-medium text-slate-500 mr-1 whitespace-nowrap">
+            <span className="text-xs font-medium text-zinc-400 mr-1 whitespace-nowrap">
               Klik ubin heksagon untuk mengubah zona:
             </span>
             {TILE_CATALOG.map((item) => {
@@ -145,14 +149,14 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                   key={item.type}
                   type="button"
                   onClick={() => onSelectBrush(item.type)}
-                  className={`h-8 px-2.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                  className={`h-8 px-2.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer ${
                     active
-                      ? 'bg-slate-900 text-white border-slate-900'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      ? 'bg-zinc-50 text-zinc-950 border-zinc-50'
+                      : 'bg-[#111114] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'
                   }`}
                 >
                   <span
-                    className="w-2.5 h-2.5 rounded-xs border border-black/10 shrink-0"
+                    className="w-2.5 h-2.5 rounded-xs border border-white/15 shrink-0"
                     style={{ backgroundColor: item.swatch }}
                   />
                   <span>{item.label}</span>
@@ -162,7 +166,7 @@ export const BottomDock: React.FC<BottomDockProps> = ({
             <button
               type="button"
               onClick={onResetLayout}
-              className="h-8 px-2.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 flex items-center gap-1 whitespace-nowrap shrink-0 ml-auto cursor-pointer"
+              className="h-8 px-2.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-white bg-[#111114] border border-zinc-800 hover:border-zinc-700 flex items-center gap-1 whitespace-nowrap shrink-0 ml-auto cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
@@ -170,10 +174,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({
           </div>
         )}
 
-        {/* Secondary Simulation & Camera Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 text-xs">
+        {/* Secondary Simulation, AI Engine & Camera Toolbar */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-zinc-800/80 text-xs">
           {/* Camera presets */}
-          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg">
+          <div className="flex items-center gap-1 bg-[#111114] border border-zinc-800/80 p-0.5 rounded-lg">
             {(
               [
                 { id: 'isometric', label: 'Isometrik' },
@@ -185,10 +189,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                 key={cam.id}
                 type="button"
                 onClick={() => onSelectCameraPreset(cam.id)}
-                className={`px-2.5 py-1 rounded-md font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md font-medium transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer ${
                   cameraPreset === cam.id
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-zinc-800 text-zinc-50'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 {cam.label}
@@ -196,15 +200,39 @@ export const BottomDock: React.FC<BottomDockProps> = ({
             ))}
           </div>
 
+          {/* AI Engine Switcher (Auto Failover / Gemini / Groq) */}
+          <div className="flex items-center gap-1 bg-[#111114] border border-zinc-800/80 p-0.5 rounded-lg">
+            {(
+              [
+                { id: 'auto', label: 'Auto AI' },
+                { id: 'groq', label: 'Groq' },
+                { id: 'gemini', label: 'Gemini' },
+              ] as Array<{ id: AIProvider; label: string }>
+            ).map((eng) => (
+              <button
+                key={eng.id}
+                type="button"
+                onClick={() => onChangeAiProvider(eng.id)}
+                className={`px-2.5 py-1 rounded-md font-medium transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer ${
+                  aiProvider === eng.id
+                    ? 'bg-zinc-800 text-zinc-50'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                {eng.label}
+              </button>
+            ))}
+          </div>
+
           {/* Speed controls */}
-          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg">
+          <div className="flex items-center gap-1 bg-[#111114] border border-zinc-800/80 p-0.5 rounded-lg">
             <button
               type="button"
               onClick={() => onChangeSimSpeed(simSpeed === 0 ? 1 : 0)}
               className={`px-2 py-1 rounded-md font-medium flex items-center gap-1 whitespace-nowrap shrink-0 cursor-pointer ${
                 simSpeed === 0
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-zinc-800 text-zinc-50'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
               title={simSpeed === 0 ? 'Lanjutkan Simulasi' : 'Jeda Simulasi'}
             >
@@ -218,8 +246,8 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                 onClick={() => onChangeSimSpeed(spd)}
                 className={`px-2 py-1 rounded-md font-mono-tabular font-medium whitespace-nowrap shrink-0 cursor-pointer ${
                   simSpeed === spd
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-zinc-800 text-zinc-50'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 {spd}×
@@ -234,10 +262,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({
               onClick={() =>
                 onChangeMode(workspaceMode === 'observe' ? 'layout' : 'observe')
               }
-              className={`px-2.5 py-1 rounded-lg font-medium border transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg font-medium border transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer ${
                 workspaceMode === 'layout'
-                  ? 'bg-[#D96B43] text-white border-[#D96B43]'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                  ? 'bg-zinc-50 text-zinc-950 border-zinc-50'
+                  : 'bg-[#111114] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'
               }`}
             >
               {workspaceMode === 'layout' ? 'Selesai Tata Ruang' : 'Tata Ruang'}
@@ -246,7 +274,7 @@ export const BottomDock: React.FC<BottomDockProps> = ({
             <button
               type="button"
               onClick={onToggleBubbles}
-              className="p-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 cursor-pointer"
+              className="p-1.5 rounded-lg border border-zinc-800 bg-[#111114] text-zinc-300 hover:border-zinc-700 hover:text-white transition-colors duration-150 cursor-pointer"
               title={showBubbles ? 'Sembunyikan label agen' : 'Tampilkan label agen'}
               aria-label="Toggle label agen"
             >
@@ -256,7 +284,7 @@ export const BottomDock: React.FC<BottomDockProps> = ({
             <button
               type="button"
               onClick={onToggleAudio}
-              className="p-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 cursor-pointer"
+              className="p-1.5 rounded-lg border border-zinc-800 bg-[#111114] text-zinc-300 hover:border-zinc-700 hover:text-white transition-colors duration-150 cursor-pointer"
               title={audioEnabled ? 'Bisukan suara' : 'Aktifkan suara interaksi'}
               aria-label="Toggle suara"
             >

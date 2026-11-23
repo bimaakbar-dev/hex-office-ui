@@ -61,17 +61,17 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
       setCopiedId(id);
       window.setTimeout(() => setCopiedId((prev) => (prev === id ? null : prev)), 1800);
     } catch {
-      // Clipboard fallback silently ignored
+      // Clipboard fallback ignored
     }
   };
 
   return (
     <aside
       aria-label="Panel Karyawan AI Studio"
-      className="fixed top-16 right-4 bottom-24 z-20 w-[390px] max-w-[calc(100vw-2rem)] bg-white/95 border border-slate-200 rounded-xl shadow-lg flex flex-col overflow-hidden"
+      className="fixed top-16 right-4 bottom-24 z-20 w-[395px] max-w-[calc(100vw-2rem)] bg-[#09090B]/95 border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden transition-transform duration-200 smooth-ease"
     >
       {/* Header */}
-      <div className="px-4 py-3.5 border-b border-slate-200 flex items-center justify-between gap-3">
+      <div className="px-4 py-3.5 border-b border-zinc-800/90 flex items-center justify-between gap-3">
         <div className="min-w-0">
           {activeAgent ? (
             <div className="flex items-center gap-2">
@@ -79,15 +79,15 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                 className="w-2.5 h-2.5 rounded-xs shrink-0"
                 style={{ backgroundColor: activeAgent.accentHex }}
               />
-              <h2 className="font-display text-sm font-bold text-slate-900 truncate">
+              <h2 className="font-display text-sm font-bold text-zinc-50 truncate">
                 {activeAgent.name}
               </h2>
-              <span className="text-xs text-slate-500 truncate">
+              <span className="text-xs text-zinc-400 truncate">
                 · {activeAgent.role}
               </span>
             </div>
           ) : (
-            <h2 className="font-display text-sm font-bold text-slate-900">
+            <h2 className="font-display text-sm font-bold text-zinc-50">
               Karyawan Studio AI
             </h2>
           )}
@@ -98,7 +98,7 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
             <button
               type="button"
               onClick={() => onSelectAgent('')}
-              className="px-2 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100 cursor-pointer"
+              className="px-2 py-1 text-xs font-medium text-zinc-400 hover:text-zinc-100 rounded-md hover:bg-zinc-900 transition-colors duration-150 cursor-pointer"
             >
               Semua Tim
             </button>
@@ -106,7 +106,7 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-500 hover:text-slate-900 rounded-md hover:bg-slate-100 cursor-pointer"
+            className="p-1.5 text-zinc-400 hover:text-zinc-100 rounded-md hover:bg-zinc-900 transition-colors duration-150 cursor-pointer"
             aria-label="Tutup panel"
           >
             <X className="w-4 h-4" />
@@ -118,10 +118,10 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
       <div className="flex-1 overflow-y-auto thin-scroll p-4 space-y-5">
         {!activeAgent ? (
           <div className="space-y-2.5">
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-zinc-400 leading-relaxed">
               Pilih karyawan studio di bawah atau klik karakter 3D untuk memfokuskan kamera dan menugaskan produksi Adobe Stock, YouTube, atau FB Reels.
             </p>
-            <div className="divide-y divide-slate-100 border border-slate-200 rounded-lg bg-slate-50/60">
+            <div className="divide-y divide-zinc-800/80 border border-zinc-800 rounded-lg bg-[#111114] overflow-hidden">
               {AGENT_PROFILES.map((agent) => {
                 const rt = agentStates[agent.id];
                 return (
@@ -129,24 +129,24 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                     key={agent.id}
                     type="button"
                     onClick={() => onSelectAgent(agent.id)}
-                    className="w-full px-3.5 py-3 text-left hover:bg-white transition-colors flex items-center justify-between gap-3 cursor-pointer"
+                    className="w-full px-3.5 py-3 text-left hover:bg-zinc-900/90 transition-colors duration-150 flex items-center justify-between gap-3 cursor-pointer"
                   >
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-zinc-100">
                         <span
                           className="w-2.5 h-2.5 rounded-xs shrink-0"
                           style={{ backgroundColor: agent.accentHex }}
                         />
                         <span>{agent.name}</span>
-                        <span className="text-xs font-normal text-slate-500">
+                        <span className="text-xs font-normal text-zinc-400">
                           · {agent.role}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-600 truncate">
+                      <p className="mt-1 text-xs text-zinc-400 truncate">
                         {ACTIVITY_TEXT[rt?.activity ?? 'working']} — {rt?.thoughtBubble}
                       </p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-400 shrink-0" />
+                    <ArrowRight className="w-4 h-4 text-zinc-500 shrink-0" />
                   </button>
                 );
               })}
@@ -154,34 +154,34 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="space-y-3 pb-4 border-b border-slate-100">
-              <p className="text-xs text-slate-600 leading-relaxed">
+            <div className="space-y-3 pb-4 border-b border-zinc-800/80">
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 {activeAgent.specialty}
               </p>
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <div className="flex justify-between text-slate-600 mb-1">
+                  <div className="flex justify-between text-zinc-400 mb-1">
                     <span>Energi</span>
-                    <span className="font-mono-tabular font-semibold text-slate-900">
+                    <span className="font-mono-tabular font-semibold text-zinc-100">
                       {activeRuntime?.energy ?? 90}%
                     </span>
                   </div>
-                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-slate-900 transition-all duration-300"
+                      className="h-full bg-zinc-100 transition-all duration-300"
                       style={{ width: `${activeRuntime?.energy ?? 90}%` }}
                     />
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between text-slate-600 mb-1">
+                  <div className="flex justify-between text-zinc-400 mb-1">
                     <span>Fokus</span>
-                    <span className="font-mono-tabular font-semibold text-slate-900">
+                    <span className="font-mono-tabular font-semibold text-zinc-100">
                       {activeRuntime?.focus ?? 92}%
                     </span>
                   </div>
-                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                     <div
                       className="h-full transition-all duration-300"
                       style={{
@@ -198,7 +198,7 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                 <button
                   type="button"
                   onClick={() => onTriggerLifeAction(activeAgent.id, 'work')}
-                  className="flex-1 py-1.5 px-2 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer"
+                  className="flex-1 py-1.5 px-2 text-xs font-medium bg-[#111114] border border-zinc-800 hover:border-zinc-700 text-zinc-200 rounded-lg flex items-center justify-center gap-1.5 whitespace-nowrap transition-colors duration-150 cursor-pointer"
                 >
                   <Briefcase className="w-3.5 h-3.5" />
                   <span>Meja</span>
@@ -206,7 +206,7 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                 <button
                   type="button"
                   onClick={() => onTriggerLifeAction(activeAgent.id, 'coffee')}
-                  className="flex-1 py-1.5 px-2 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer"
+                  className="flex-1 py-1.5 px-2 text-xs font-medium bg-[#111114] border border-zinc-800 hover:border-zinc-700 text-zinc-200 rounded-lg flex items-center justify-center gap-1.5 whitespace-nowrap transition-colors duration-150 cursor-pointer"
                 >
                   <Coffee className="w-3.5 h-3.5" />
                   <span>Kopi</span>
@@ -214,7 +214,7 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                 <button
                   type="button"
                   onClick={() => onTriggerLifeAction(activeAgent.id, 'meeting')}
-                  className="flex-1 py-1.5 px-2 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer"
+                  className="flex-1 py-1.5 px-2 text-xs font-medium bg-[#111114] border border-zinc-800 hover:border-zinc-700 text-zinc-200 rounded-lg flex items-center justify-center gap-1.5 whitespace-nowrap transition-colors duration-150 cursor-pointer"
                 >
                   <Users className="w-3.5 h-3.5" />
                   <span>Pitching</span>
@@ -226,7 +226,7 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
 
         {/* Quick Microstock & Content Creator Templates */}
         <div className="space-y-2">
-          <div className="text-xs font-medium text-slate-700">
+          <div className="text-xs font-medium text-zinc-300">
             Tugas Cepat Microstock & Kreator
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -236,7 +236,7 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                 type="button"
                 disabled={isDispatching}
                 onClick={() => onSendPrompt(preset.prompt, preset.targetAgentId)}
-                className="px-2.5 py-1.5 text-[11px] font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 rounded-md transition-colors whitespace-nowrap cursor-pointer"
+                className="px-2.5 py-1.5 text-[11px] font-medium text-zinc-300 bg-[#111114] border border-zinc-800 hover:border-zinc-600 hover:text-white disabled:opacity-50 rounded-md transition-colors duration-150 whitespace-nowrap cursor-pointer"
               >
                 {preset.label}
               </button>
@@ -246,15 +246,15 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
 
         {/* Task & AI Conversation Log */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs text-slate-500">
-            <span className="font-medium text-slate-700">Hasil Kerja & Log Produksi</span>
+          <div className="flex items-center justify-between text-xs text-zinc-500">
+            <span className="font-medium text-zinc-300">Hasil Kerja & Log Produksi</span>
             <span className="font-mono-tabular">{visibleMessages.length} catatan</span>
           </div>
 
           {visibleMessages.length === 0 ? (
-            <div className="py-5 px-4 bg-slate-50 border border-slate-200/80 rounded-lg text-center">
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Pilih salah satu tombol tugas cepat di atas atau tulis instruksi khusus untuk{' '}
+            <div className="py-5 px-4 bg-[#111114] border border-zinc-800/80 rounded-lg text-center">
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Pilih tombol tugas cepat di atas atau tulis instruksi khusus untuk{' '}
                 {activeAgent ? activeAgent.name : 'tim studio'}.
               </p>
             </div>
@@ -265,15 +265,15 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                   key={msg.id}
                   className={`p-3 rounded-lg border text-xs leading-relaxed ${
                     msg.sender === 'user'
-                      ? 'bg-slate-900 text-white border-slate-900 ml-6'
+                      ? 'bg-zinc-100 text-zinc-950 border-zinc-100 ml-6'
                       : msg.sender === 'error'
-                        ? 'bg-red-50 text-red-800 border-red-200'
-                        : 'bg-slate-50 text-slate-800 border-slate-200 mr-2'
+                        ? 'bg-red-950/60 text-red-200 border-red-900/80'
+                        : 'bg-[#111114] text-zinc-200 border-zinc-800 mr-2'
                   }`}
                 >
                   <div
                     className={`flex items-center justify-between text-[11px] mb-1 ${
-                      msg.sender === 'user' ? 'text-slate-300' : 'text-slate-500'
+                      msg.sender === 'user' ? 'text-zinc-600' : 'text-zinc-400'
                     }`}
                   >
                     <span className="font-semibold">
@@ -284,10 +284,10 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                   <p className="whitespace-pre-wrap">{msg.text}</p>
 
                   {msg.deliverables && msg.deliverables.length > 0 && (
-                    <ul className="mt-2.5 pt-2 border-t border-slate-200/80 space-y-1.5 text-slate-700">
+                    <ul className="mt-2.5 pt-2 border-t border-zinc-800 space-y-1.5 text-zinc-300">
                       {msg.deliverables.map((item, idx) => (
                         <li key={idx} className="flex gap-2">
-                          <span className="font-mono-tabular text-slate-400 shrink-0">
+                          <span className="font-mono-tabular text-zinc-500 shrink-0">
                             0{idx + 1}.
                           </span>
                           <span>{item}</span>
@@ -297,19 +297,19 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                   )}
 
                   {msg.metadataBlock && msg.metadataBlock.trim().length > 0 && (
-                    <div className="mt-2.5 pt-2 border-t border-slate-200/80">
+                    <div className="mt-2.5 pt-2 border-t border-zinc-800">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-medium text-slate-600">
+                        <span className="text-[11px] font-medium text-zinc-400">
                           Siap Salin (Metadata / Prompt / Caption)
                         </span>
                         <button
                           type="button"
                           onClick={() => handleCopyBlock(msg.id, msg.metadataBlock!)}
-                          className="px-2 py-0.5 text-[11px] font-medium bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded flex items-center gap-1 cursor-pointer"
+                          className="px-2 py-0.5 text-[11px] font-medium bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-200 rounded flex items-center gap-1 cursor-pointer"
                         >
                           {copiedId === msg.id ? (
                             <>
-                              <Check className="w-3 h-3 text-emerald-600" />
+                              <Check className="w-3 h-3 text-emerald-400" />
                               <span>Tersalin</span>
                             </>
                           ) : (
@@ -320,16 +320,21 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                           )}
                         </button>
                       </div>
-                      <pre className="p-2 bg-white border border-slate-200 rounded text-[11px] font-mono-tabular text-slate-800 whitespace-pre-wrap break-words">
+                      <pre className="p-2 bg-[#09090B] border border-zinc-800 rounded text-[11px] font-mono-tabular text-zinc-200 whitespace-pre-wrap break-words">
                         {msg.metadataBlock}
                       </pre>
                     </div>
                   )}
 
-                  {msg.collaboratorName && (
-                    <p className="mt-2 text-[11px] text-slate-500">
-                      Sinkronisasi dengan {msg.collaboratorName}
-                    </p>
+                  {(msg.collaboratorName || msg.providerUsed) && (
+                    <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-zinc-500">
+                      <span>
+                        {msg.collaboratorName ? `Sinkronisasi dengan ${msg.collaboratorName}` : ''}
+                      </span>
+                      {msg.providerUsed && (
+                        <span className="font-mono-tabular">{msg.providerUsed}</span>
+                      )}
+                    </div>
                   )}
 
                   {msg.sender === 'error' && msg.retryPrompt && (
@@ -339,7 +344,7 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                       onClick={() =>
                         onSendPrompt(msg.retryPrompt!, msg.retryAgentId ?? 'raka')
                       }
-                      className="mt-2.5 px-2.5 py-1 text-[11px] font-semibold bg-red-600 hover:bg-red-700 text-white rounded-md disabled:opacity-50 cursor-pointer"
+                      className="mt-2.5 px-2.5 py-1 text-[11px] font-semibold bg-red-600 hover:bg-red-500 text-white rounded-md disabled:opacity-50 cursor-pointer"
                     >
                       Coba Ulang
                     </button>
@@ -354,7 +359,7 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
       {/* Follow-up Prompt Footer */}
       <form
         onSubmit={handleSubmit}
-        className="p-3 border-t border-slate-200 bg-white flex items-center gap-2"
+        className="p-3 border-t border-zinc-800 bg-[#09090B] flex items-center gap-2"
       >
         <input
           type="text"
@@ -365,12 +370,12 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
               ? `Beri tugas ke ${activeAgent.name}...`
               : 'Kirim tugas ke seluruh tim studio...'
           }
-          className="h-9 flex-1 px-3 text-xs text-slate-900 placeholder:text-slate-400 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+          className="h-9 flex-1 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 bg-[#111114] border border-zinc-800 rounded-lg focus:outline-none focus:border-zinc-600"
         />
         <button
           type="submit"
           disabled={!drawerPrompt.trim() || isDispatching}
-          className="h-9 px-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-45 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
+          className="h-9 px-3 bg-zinc-50 text-zinc-950 rounded-lg hover:bg-white disabled:opacity-45 transition-colors duration-150 flex items-center justify-center shrink-0 cursor-pointer"
           aria-label="Kirim tugas"
         >
           <Send className="w-3.5 h-3.5" />

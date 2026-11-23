@@ -107,37 +107,37 @@ export const TILE_CATALOG: Array<{
     type: 'workstation',
     label: 'Meja Produksi',
     description: 'Stasiun editing kreator & riset microstock',
-    swatch: '#D8C7AE',
+    swatch: '#52525B',
   },
   {
     type: 'meeting',
     label: 'Ruang Pitching',
     description: 'Meja bundar brainstorming konten & review mingguan',
-    swatch: '#9EB3C8',
+    swatch: '#3B82F6',
   },
   {
     type: 'lounge',
     label: 'Kafe Studio',
     description: 'Bar espresso untuk memulihkan energi karyawan AI',
-    swatch: '#D98A6C',
+    swatch: '#D97757',
   },
   {
     type: 'garden',
     label: 'Taman Inspirasi',
     description: 'Area hijau biofilik penambah fokus kreatif',
-    swatch: '#78A37E',
+    swatch: '#4D7C59',
   },
   {
     type: 'server',
     label: 'Node Render & NAS',
     description: 'Penyimpanan aset mentah 4K & node pemrosesan AI',
-    swatch: '#475569',
+    swatch: '#334155',
   },
   {
     type: 'walkway',
     label: 'Koridor',
     description: 'Lantai teraso jalur jalan antar divisi studio',
-    swatch: '#ECE6DA',
+    swatch: '#27272A',
   },
 ];
 

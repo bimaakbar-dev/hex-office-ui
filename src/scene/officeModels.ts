@@ -24,9 +24,9 @@ const HEX_BASE_GEO = (() => {
   const geo = new THREE.ExtrudeGeometry(shape, {
     depth: TILE_HEIGHT,
     bevelEnabled: true,
-    bevelThickness: 0.035,
-    bevelSize: 0.035,
-    bevelSegments: 2,
+    bevelThickness: 0.036,
+    bevelSize: 0.036,
+    bevelSegments: 3,
   });
   geo.rotateX(-Math.PI / 2);
   geo.translate(0, -TILE_HEIGHT, 0);
@@ -36,7 +36,7 @@ const HEX_BASE_GEO = (() => {
 
 const HEX_INLAY_GEO = (() => {
   const shape = createHexShape(HEX_RADIUS - 0.16);
-  const hole = createHexShape(HEX_RADIUS - 0.21);
+  const hole = createHexShape(HEX_RADIUS - 0.205);
   shape.holes.push(hole);
   const geo = new THREE.ShapeGeometry(shape);
   geo.rotateX(-Math.PI / 2);
@@ -62,17 +62,17 @@ export function createHexTileGroup(
   const group = new THREE.Group();
   const monitorGlows: THREE.Mesh[] = [];
 
-  // Tile surface color & material properties
+  // Vercel Obsidian Dark Studio tile surface materials
   const surfaceConfig: Record<
     HexTile['type'],
     { color: number; roughness: number; metalness: number; useTerrazzo?: boolean; rimColor: number }
   > = {
-    walkway: { color: 0xf4f0e8, roughness: 0.78, metalness: 0.04, useTerrazzo: true, rimColor: 0xc8b89a },
-    workstation: { color: 0xebe4d8, roughness: 0.72, metalness: 0.05, rimColor: 0x94a3b8 },
-    meeting: { color: 0xe3e9f0, roughness: 0.65, metalness: 0.08, rimColor: 0x64748b },
-    lounge: { color: 0xf0e4d8, roughness: 0.75, metalness: 0.05, rimColor: 0xd98a6c },
-    garden: { color: 0xe4ece2, roughness: 0.85, metalness: 0.02, rimColor: 0x6e9b77 },
-    server: { color: 0xdbe2ea, roughness: 0.55, metalness: 0.18, rimColor: 0x475569 },
+    walkway: { color: 0x16161a, roughness: 0.68, metalness: 0.12, useTerrazzo: true, rimColor: 0x3f3f46 },
+    workstation: { color: 0x1a1a20, roughness: 0.55, metalness: 0.16, rimColor: 0x52525b },
+    meeting: { color: 0x161c26, roughness: 0.48, metalness: 0.22, rimColor: 0x3b82f6 },
+    lounge: { color: 0x1f1918, roughness: 0.62, metalness: 0.12, rimColor: 0xd97757 },
+    garden: { color: 0x141d17, roughness: 0.78, metalness: 0.06, rimColor: 0x4d7c59 },
+    server: { color: 0x12141a, roughness: 0.42, metalness: 0.28, rimColor: 0x64748b },
   };
 
   const cfg = surfaceConfig[tile.type];

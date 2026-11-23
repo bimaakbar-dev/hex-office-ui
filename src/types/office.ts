@@ -61,6 +61,8 @@ export interface ScreenProjection {
   visible: boolean;
 }
 
+export type AIProvider = 'auto' | 'gemini' | 'groq';
+
 export interface AgentMessage {
   id: string;
   agentId: string;
@@ -70,6 +72,7 @@ export interface AgentMessage {
   deliverables?: string[];
   metadataBlock?: string;
   collaboratorName?: string;
+  providerUsed?: string;
   retryPrompt?: string;
   retryAgentId?: string;
   timestamp: string;

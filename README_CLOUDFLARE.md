@@ -42,8 +42,11 @@ Cari komentar `// [GANTI DI SINI]` di dalam file-file berikut:
 4. Klik **Save and Deploy**. Folder `functions/api/agent/dispatch.ts` otomatis aktif sebagai backend serverless gratis!
 5. Setelah deploy selesai, masuk ke tab **Settings -> Variables and Secrets** pada project Pages tersebut:
    - Tambahkan **Secret** baru:
-     - **Variable name**: `GEMINI_API_KEY`
+     - **Variable name**: `GEMINI_API_KEY` *(wajib atau pilih salah satu)*
      - **Value**: *(tempel API key Google AI Studio Anda)*
+   - *(Opsional & Direkomendasikan)* Tambahkan juga **Secret** Groq API gratis (`https://console.groq.com/keys`):
+     - **Variable name**: `GROQ_API_KEY`
+     - **Value**: *(tempel API key Groq Anda — otomatis menjadi failover instan jika Gemini sibuk 503)*
    - Simpan, lalu klik **Retry deployment** di tab Deployments agar Secret langsung terbaca.
 
 ### Opsi B: Via Wrangler CLI dari Terminal Lokal
