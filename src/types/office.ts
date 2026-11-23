@@ -70,6 +70,8 @@ export interface AgentMessage {
   deliverables?: string[];
   metadataBlock?: string;
   collaboratorName?: string;
+  retryPrompt?: string;
+  retryAgentId?: string;
   timestamp: string;
 }
 

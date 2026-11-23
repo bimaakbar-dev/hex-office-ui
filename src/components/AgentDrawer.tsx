@@ -331,6 +331,19 @@ export const AgentDrawer: React.FC<AgentDrawerProps> = ({
                       Sinkronisasi dengan {msg.collaboratorName}
                     </p>
                   )}
+
+                  {msg.sender === 'error' && msg.retryPrompt && (
+                    <button
+                      type="button"
+                      disabled={isDispatching}
+                      onClick={() =>
+                        onSendPrompt(msg.retryPrompt!, msg.retryAgentId ?? 'raka')
+                      }
+                      className="mt-2.5 px-2.5 py-1 text-[11px] font-semibold bg-red-600 hover:bg-red-700 text-white rounded-md disabled:opacity-50 cursor-pointer"
+                    >
+                      Coba Ulang
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

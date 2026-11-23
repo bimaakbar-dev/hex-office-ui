@@ -323,6 +323,8 @@ export default function App() {
           agentName: 'Sistem',
           sender: 'error',
           text: message,
+          retryPrompt: prompt,
+          retryAgentId: agentOrTeamId,
           timestamp: formatClockTime(),
         };
         setMessages((prev) => [...prev, errMsg]);
